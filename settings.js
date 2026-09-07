@@ -1,6 +1,6 @@
 module.exports = {
   // 🤖 BASIC INFO
-  botName: "DEV MICHAEL SCOFIELD-MD 👑",
+  botName: "𝐌𝐈𝐂𝐇𝐀𝐄𝐋 𝐒𝐂𝐎𝐅𝐈𝐄𝐋𝐃-𝐌𝐃 👑",
   ownerName: "Dev Michael Scofield",
   ownerNumber: "221758535949",
   sudoNumbers: ["221776227173"],
@@ -14,7 +14,7 @@ module.exports = {
 
   // 🎨 STICKER UI CUSTOMIZATION
   packname: "Created by",
-  author: "DEV MICHAEL SCOFIELD-MD 💜",
+  author: "𝐃𝐞𝐯 𝐌𝐢𝐜𝐡𝐚𝐞𝐥 𝐒𝐜𝐨𝐟𝐢𝐞𝐥𝐝™ 🌹",
 
   // 🛡️ SECURITY & CONTROL OPTIONS
   antiLink: false,
