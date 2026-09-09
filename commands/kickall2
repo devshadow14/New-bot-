@@ -1,0 +1,38 @@
+const settings = require("../settings");
+
+module.exports = async (sock, m, args) => {
+    const from = m.key.remoteJid;
+    const sender = m.key.participant || m.key.remoteJid;
+    const isGroup = from.endsWith("@g.us");
+
+    if (!isGroup) {
+        return await sock.sendMessage(from, { text: "❌ *Cette commande ne marche qu'en groupe!*" }, { quoted: m });
+    }
+
+    const ownerNumber = settings.ownerNumber.replace(/[^0-9]/g, "");
+    const isOwner = sender.includes(ownerNumber) || m.key.fromMe;
+
+    if (!isOwner) {
+        return await sock.sendMessage(from, { text: "❌ *Access Denied:* Seul le propriétaire du bot peut utiliser cette commande." }, { quoted: m });
+    }
+
+    try {
+        const metadata = await sock.groupMetadata(from);
+        const botId = sock.user.id.split(":")[0] + "@s.whatsapp.net";
+
+        const membersToKick = metadata.participants
+            .filter(p => p.id !== botId && !p.id.includes(ownerNumber))
+            .map(p => p.id);
+
+        if (membersToKick.length === 0) {
+            return await sock.sendMessage(from, { text: "⚠️ Personne à expulser." }, { quoted: m });
+        }
+
+        await sock.sendMessage(from, { text: `⚠️ *KickAll2:* Expulsion de ${membersToKick.length} membres (y compris les admins)...` }, { quoted: m });
+        await sock.groupParticipantsUpdate(from, membersToKick, "remove");
+        await sock.sendMessage(from, { text: `✅ Tous les membres ont été expulsés !` }, { quoted: m });
+
+    } catch (error) {
+        await sock.sendMessage(from, { text: "❌ Échec. Vérifie que le bot est bien admin." }, { quoted: m });
+    }
+};
