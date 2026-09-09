@@ -1,6 +1,7 @@
 const settings = require("../settings");
 const fs = require("fs");
 const path = require("path");
+const { readDb } = require("../lib/db");
 
 module.exports = async (sock, m, args) => {
     const pushName = m.pushName || m.senderPn || (m.sender ? m.sender.split('@')[0] : "User");
@@ -27,29 +28,34 @@ module.exports = async (sock, m, args) => {
                 .map(file => file.replace(".js", "").toLowerCase());
         }
     } catch (e) {
-        console.error("Error reading commands folder:", e);
+        console.error(`Error reading commands folder: ${e.message}`);
     }
 
     const totalCommands = commandList.length;
+    const db = readDb();
 
     const categories = {
-        "BOT INFO": ["alive", "ping", "menu", "owner", "runtime", "gstatut", "jidnewsletter", "fb", "repo"],
-        "TOOLS": ["play", "igdl", "twitter", "clear", "tourl", "video", "vv", "image"],
-        "GROUP": ["kick", "kickall", "add", "promote", "demote", "delete", "tagall", "open", "close", "link", "hidetag"],
-        "SETTINGS": ["antilink", "setprefix", "help", "mode", "autoreact", "autoread", "autotyping"]
+        "🏠 GENERAL": ["ping", "alive", "menu", "system", "settings", "jid", "getdp", "winfo", "chr", "pair", "vv", "vv2", "save", "font", "fancy", "readmore", "forward", "send", "autostatus", "autolike", "telegram", "help", "runtime", "gstatut", "jidnewsletter", "fb", "repo", "owner", "bot_info"],
+        "📥 DOWNLOAD": ["play", "igdl", "twitter", "video"],
+        "🔄 CONVERT": ["sticker", "tourl", "toimg", "clear"],
+        "🎮 FUN": ["kaydo"],
+        "👥 GROUP": ["add", "antilink", "antilinkaction", "demote", "goodbye", "welcome", "hidetag", "kick", "kickall", "kickall2", "link", "gclink", "promote", "tagall", "mute", "unmute", "pin", "gcinfo", "groupstatus", "warn", "warnlist", "resetwarn", "antibad", "antispam", "antimention", "antidelete", "antibot", "anticall", "open", "close", "delete"],
+        "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"],
+        "👑 OWNER": ["block", "unblock", "leave", "join", "setpp", "setpp2", "bc", "deleteme", "setprefix", "mode"],
+        "⚙️ SETTINGS": ["autoreact", "autoread", "autotyping", "upload"]
     };
 
     const categorizedCommands = new Set(Object.values(categories).flat());
     const otherCommands = commandList.filter(cmd => !categorizedCommands.has(cmd));
     if (otherCommands.length > 0) {
-        categories["OTHER"] = otherCommands;
+        categories["✨ OTHER"] = otherCommands;
     }
 
     let menuCategoriesText = "";
     for (const [catName, cmds] of Object.entries(categories)) {
         const activeCmdsInCat = cmds.filter(cmd => commandList.includes(cmd));
         if (activeCmdsInCat.length === 0) continue;
-        
+
         const formattedCmds = activeCmdsInCat.map(cmd => `*┋ ⬡ ${cmd}*`).join("\n");
         menuCategoriesText += `\n\`『 ${catName} 』\`\n╭───────────────────⊷\n${formattedCmds}\n╰───────────────────⊷\n`;
     }
@@ -58,39 +64,22 @@ module.exports = async (sock, m, args) => {
         await sock.sendMessage(chatId, { text: "⚡ Loading menu..." }, { quoted: m });
 
         const menu = `
-*╭┈───〔 𝐌𝐈𝐂𝐇𝐀𝐄𝐋 𝐒𝐂𝐎𝐅𝐈𝐄𝐋𝐃-𝐌𝐃 〕┈───⊷*
-*├▢ 🤖 ᴏᴡɴᴇʀ:* 𝖬𝖨𝖢𝖧𝖠𝖤𝖫 𝖲𝖢𝖮𝖥𝖨𝖤𝖫𝖣
+*╭┈───〔 ${settings.botName} 〕┈───⊷*
+*├▢ 🤖 ᴏᴡɴᴇʀ:* ${settings.ownerName}
 *├▢ 👤 ᴜsᴇʀ:* ${pushName}
 *├▢ 📜 ᴄᴏᴍᴍᴀɴᴅs:* ${totalCommands}
 *├▢ ⏱️ ʀᴜɴᴛɪᴍᴇ:* ${uptime}
 *├▢ 📦 ᴘʀᴇғɪx:* ${prefix}
-*├▢ ⚙️ ᴍᴏᴅᴇ:* public
-*├▢ 🏷️ ᴠᴇʀsɪᴏɴ:* 2.0.0
+*├▢ ⚙️ ᴍᴏᴅᴇ:* ${db.mode || "public"}
+*├▢ 🏷️ ᴠᴇʀsɪᴏɴ:* ${settings.version}
 *╰───────────────────⊷*
 ${menuCategoriesText}
-> *© 𝚙𝚘𝚠𝚎𝚛𝚎𝚍 𝚋𝚢 𝐃𝐞𝐯 𝐌𝐢𝐜𝐡𝐚𝐞𝐥 𝐒𝐜𝐨𝐟𝐢𝐞𝐥𝐝🌹*
+> *©️ powered by ${settings.ownerName}*
     `.trim();
 
-        const channelInfo = {
-            contextInfo: {
-                mentionedJid: [m.sender || m.key.participant],
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: "@newsletter",
-                    newsletterName: "MICHAEL SCOFIELD-MD OFFICIAL",
-                    serverMessageId: -1
-                }
-            }
-        };
-
-        await sock.sendMessage(chatId, {
-            image: { url: "https://files.catbox.moe/njjlos.jpg" },
-            caption: menu,
-            ...channelInfo
-        }, { quoted: m });
+        await sock.sendMessage(chatId, { text: menu }, { quoted: m });
 
     } catch (e) {
-        console.error("Menu Error:", e);
+        console.error(`Menu Error: ${e.message}`);
     }
 };
