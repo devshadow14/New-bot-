@@ -11,6 +11,8 @@ const {
 } = require("@whiskeysockets/baileys");
 
 const { handleMessage } = require("./lib/messageHandler");
+const { handleGroupParticipantsUpdate } = require("./lib/groupEvents");
+const { readDb } = require("./lib/db");
 
 const PORT = process.env.PORT || 20025;
 const app = express();
@@ -64,6 +66,21 @@ async function createWebSession(number) {
     });
 
     sock.ev.on("messages.upsert", (chatUpdate) => handleMessage(sock, chatUpdate));
+    sock.ev.on("group-participants.update", (update) => handleGroupParticipantsUpdate(sock, update));
+
+    sock.ev.on("call", async (calls) => {
+        try {
+            const db = readDb();
+            if (!db.anticall) return;
+            for (const call of calls) {
+                if (call.status === "offer") {
+                    await sock.rejectCall(call.id, call.from);
+                }
+            }
+        } catch (error) {
+            console.error(`AntiCall Error: ${error.message}`);
+        }
+    });
 
     return sock;
 }
@@ -146,9 +163,23 @@ app.get("/api/stats", (req, res) => {
 // Health check (préserve le comportement de l'ancien uptime server)
 // ======================================================
 app.get("/", (req, res) => {
-    res.type("text/plain").send("RIFT-MD IS ONLINE");
+    res.type("text/plain").send("MICHAEL SCOFIELD MD IS ONLINE");
 });
+
+async function requestPairingForNumber(number) {
+    const existing = activeConnections.get(number);
+    if (existing?.status === "connected") {
+        return { success: true, alreadyConnected: true };
+    }
+
+    const sock = await createWebSession(number);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const pairingCode = await sock.requestPairingCode(number);
+    return { success: true, pairingCode };
+}
 
 app.listen(PORT, () => {
     console.log(`🌐 Pairing API running on port ${PORT}`);
 });
+
+module.exports = { requestPairingForNumber };
