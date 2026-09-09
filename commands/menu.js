@@ -38,7 +38,7 @@ module.exports = async (sock, m, args) => {
         "🏠 GENERAL": ["ping", "alive", "menu", "system", "settings", "jid", "getdp", "winfo", "chr", "pair", "vv", "vv2", "save", "font", "fancy", "readmore", "forward", "send", "autostatus", "autolike", "telegram", "help", "runtime", "gstatut", "jidnewsletter", "fb", "repo", "owner", "bot_info"],
         "📥 DOWNLOAD": ["play", "igdl", "twitter", "video"],
         "🔄 CONVERT": ["sticker", "tourl", "toimg", "clear"],
-        "🎮 FUN": ["kaydo"],
+        "🎮 FUN": ["kaydo", "angry", "happy", "heart", "sad", "shy", "moon", "confused", "joke", "fact", "quote", "roll", "coin", "8ball", "ship", "compliment", "roast", "pick", "rate", "boom", "bomb"],
         "👥 GROUP": ["add", "antilink", "antilinkaction", "demote", "goodbye", "welcome", "hidetag", "kick", "kickall", "kickall2", "link", "gclink", "promote", "tagall", "mute", "unmute", "pin", "gcinfo", "groupstatus", "warn", "warnlist", "resetwarn", "antibad", "antispam", "antimention", "antidelete", "antibot", "anticall", "open", "close", "delete"],
         "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"],
         "👑 OWNER": ["block", "unblock", "leave", "join", "setpp", "setpp2", "bc", "deleteme", "setprefix", "mode"],
@@ -61,7 +61,7 @@ module.exports = async (sock, m, args) => {
     }
 
     try {
-        await sock.sendMessage(chatId, { text: "⚡ Loading menu..." }, { quoted: m });
+        await sock.sendMessage(chatId, { text: "⚡ Loading menu scofield-md..." }, { quoted: m });
 
         const menu = `
 *╭┈───〔 ${settings.botName} 〕┈───⊷*
@@ -77,7 +77,10 @@ ${menuCategoriesText}
 > *©️ powered by ${settings.ownerName}*
     `.trim();
 
-        await sock.sendMessage(chatId, { text: menu }, { quoted: m });
+        await sock.sendMessage(chatId, {
+            image: { url: "https://files.catbox.moe/99l8s6.png" },
+            caption: menu
+        }, { quoted: m });
 
     } catch (e) {
         console.error(`Menu Error: ${e.message}`);
