@@ -13,6 +13,7 @@ const {
 const { handleMessage } = require("./lib/messageHandler");
 const { handleGroupParticipantsUpdate } = require("./lib/groupEvents");
 const { readDb } = require("./lib/db");
+const { getAnticall } = require("./lib/instanceSettings");
 
 const PORT = process.env.PORT || 20025;
 const app = express();
@@ -71,7 +72,7 @@ async function createWebSession(number) {
     sock.ev.on("call", async (calls) => {
         try {
             const db = readDb();
-            if (!db.anticall) return;
+            if (!getAnticall(sock)) return;
             for (const call of calls) {
                 if (call.status === "offer") {
                     await sock.rejectCall(call.id, call.from);
@@ -178,8 +179,53 @@ async function requestPairingForNumber(number) {
     return { success: true, pairingCode };
 }
 
+// ======================================================
+// RECONNEXION AUTOMATIQUE DES SESSIONS EXISTANTES AU DÉMARRAGE
+// ======================================================
+async function reconnectExistingSessions() {
+    let folders = [];
+    try {
+        folders = fs.readdirSync(sessionsDir).filter(f => {
+            return fs.statSync(path.join(sessionsDir, f)).isDirectory();
+        });
+    } catch (e) {
+        console.error(`❌ Error reading sessions_web folder: ${e.message}`);
+        return;
+    }
+
+    if (folders.length === 0) {
+        console.log("ℹ️ Aucune session web existante à reconnecter.");
+        return;
+    }
+
+    console.log(`🔄 Reconnexion de ${folders.length} session(s) web existante(s)...`);
+
+    for (const number of folders) {
+        try {
+            const sock = await createWebSession(number);
+
+            // Si les identifiants ne sont pas valides (pairing jamais terminé), on nettoie
+            setTimeout(() => {
+                const entry = activeConnections.get(number);
+                if (entry && !sock.authState.creds.registered && entry.status !== "connected") {
+                    console.log(`🧹 Session ${number} jamais finalisée, nettoyage...`);
+                    activeConnections.delete(number);
+                    fs.rmSync(path.join(sessionsDir, number), { recursive: true, force: true });
+                }
+            }, 15000);
+
+        } catch (error) {
+            console.error(`❌ Impossible de reconnecter la session ${number}: ${error.message}`);
+        }
+
+        // Petit délai entre chaque reconnexion pour éviter de spammer WhatsApp
+        await new Promise(r => setTimeout(r, 1500));
+    }
+}
+
 app.listen(PORT, () => {
     console.log(`🌐 Pairing API running on port ${PORT}`);
+    reconnectExistingSessions();
 });
 
 module.exports = { requestPairingForNumber };
