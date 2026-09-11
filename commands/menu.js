@@ -19,6 +19,14 @@ module.exports = async (sock, m, args) => {
 
     const uptime = runtime(process.uptime());
 
+    // 💾 RAM
+    const usedMemory = (process.memoryUsage().rss / 1024 / 1024 / 1024).toFixed(2);
+    const totalMemory = (require("os").totalmem() / 1024 / 1024 / 1024).toFixed(2);
+
+    // 🕒 TIME
+    const now = new Date();
+    const time = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+
     let commandList = [];
     try {
         const commandsDir = path.join(__dirname, "../commands");
@@ -34,15 +42,17 @@ module.exports = async (sock, m, args) => {
     const totalCommands = commandList.length;
 
     const categories = {
-        "🏠 GENERAL": ["ping", "alive", "menu", "system", "settings", "jid", "getdp", "winfo", "chr", "pair", "vv", "vv2", "save", "font", "fancy", "readmore", "forward", "send", "autostatus", "autolike", "telegram", "help", "runtime", "gstatut", "jidnewsletter", "fb", "repo", "owner", "bot_info"],
-        "📥 DOWNLOAD": ["play", "igdl", "twitter", "video"],
-        "🔄 CONVERT": ["sticker", "tourl", "toimg", "clear", "qrcode", "translate", "tts"],
-        "🎮 FUN": ["kaydo", "angry", "happy", "heart", "sad", "shy", "moon", "confused", "joke", "fact", "quote", "roll", "coin", "8ball", "ship", "compliment", "roast", "pick", "rate", "boom", "bomb"],
-        "👥 GROUP": ["add", "antilink", "antilinkaction", "demote", "goodbye", "welcome", "hidetag", "kick", "kickall", "kickall2", "link", "gclink", "promote", "tagall", "mute", "unmute", "pin", "gcinfo", "groupstatus", "warn", "warnlist", "resetwarn", "antibad", "antispam", "antimention", "antidelete", "antibot", "anticall", "open", "close", "delete"],
-        "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"],
-        "👑 OWNER": ["block", "unblock", "leave", "bye", "join", "setpp", "setpp2", "bc", "deleteme", "setprefix", "mode"],
-        "⚙️ SETTINGS": ["autoreact", "autoread", "autotyping", "upload"],
-        "🚫 BAN": Array.from({length: 20}, (_, i) => `ban${i + 1}`)
+        "🏠 MAIN": ["autobio", "menu", "setprefix", "setmenustyle", "pair", "pairsessions", "revokepair", "repo", "ping", "alive", "runtime"],
+        "🤖 AI": ["llamacoder", "llama", "deepaimodels", "nanobanana", "txt2video", "veo3", "nanoblend", "chatbot", "gpt", "blackbox", "gemini", "claudepro", "deepai", "meta", "letmegpt", "flux", "unlimitedai"],
+        "📥 DOWNLOADER": ["instagram", "mediafire", "facebook", "ytmp3", "play", "playvideo", "ytmp4", "twitter", "pinterest", "spotify", "tiktok", "threads", "soundcloud", "mfdl", "aio"],
+        "ℹ️ INFO": ["google", "pinsearch", "lyrics", "wikipedia", "weather", "getid", "groupinfo", "scores", "livescore", "define", "listpair", "adminid", "jid", "owner"],
+        "🛠️ TOOLS": ["togif", "gifreact", "catbox", "upload", "viewonce", "tgsticker", "neko", "bible", "uguu", "tocartoon", "toimage", "alightgen", "tiktokboost", "waifu", "ssweb", "shorturl", "translate", "meme", "waifu2", "fact", "quote", "calc", "roll", "flip", "choose", "qr", "currency", "sticker", "take", "telegram"],
+        "🎭 FUN": ["joke", "truth", "dare", "roast", "lurk", "shoot", "sleep", "clap", "shrug", "stare", "wave", "poke", "confused", "smile", "peck", "wink", "sip", "blush", "smug", "tickle", "yeet", "think", "highfive", "feed", "wag", "bite", "teehee", "shocked", "bleh", "bored", "nom", "nya", "yawn", "facepalm", "cuddle", "kickgif", "happy", "carry", "hug", "kabedon", "baka", "bonk", "pat", "angry", "spin", "shake", "run", "nod", "nope", "kiss", "dance", "punch", "handshake", "slap", "cry", "lappillow", "pout", "blowkiss", "handhold", "salute", "thumbsup", "laughgif", "tableflip", "actionslist"],
+        "👥 GROUP-ADMIN": ["welcome", "goodbye", "setwelcome", "setgoodbye", "gcstatus", "tagall", "hidetag", "mute", "unmute", "muteuser", "unmuteuser", "unmuteall", "setgcname", "setgcpic", "groupdesc", "link", "revokelink", "lockinfo", "unlockinfo", "getpp", "setpp", "promote", "demote", "kick", "kickall", "kickall2", "kicknum", "promoteall", "demoteall", "acceptall", "rejectall", "kickadmin", "unlock", "opentime", "closetime", "block", "unblock", "left", "vcf"],
+        "🛡️ GROUP-SECURITY": ["antidelete", "antiedit", "antisticker", "antigroupmention", "antilink", "antigif", "antinum", "antispam", "antibot", "autoreact", "anticall", "mode", "security", "resetsettings"],
+        "👑 OWNER": ["newgroup", "sudoadd", "delsudo", "listsudo", "ban", "unban", "banlist", "addcase", "delcase", "listcase", "addreply", "delreply", "listreply", "reply", "setbotname", "setbotimg", "broadcaster"],
+        "📁 GAMES": ["riddle", "animequiz"],
+        "📁 LOGO": ["1917", "arena", "blackpink", "devil", "fire", "glitch", "hacker", "ice", "impressive", "leaves", "light", "matrix", "metallic", "neon", "purple", "sand", "snow", "thunder", "logolist"]
     };
 
     const categorizedCommands = new Set(Object.values(categories).flat());
@@ -51,38 +61,30 @@ module.exports = async (sock, m, args) => {
         categories["✨ OTHER"] = otherCommands;
     }
 
-    const DIVIDER = "▭".repeat(22);
-
     let menuCategoriesText = "";
     for (const [catName, cmds] of Object.entries(categories)) {
         const activeCmdsInCat = cmds.filter(cmd => commandList.includes(cmd)).sort();
         if (activeCmdsInCat.length === 0) continue;
 
-        const formattedCmds = activeCmdsInCat.map(cmd => `   ◈ ${getPrefix(sock)}${cmd}`).join("\n");
-        menuCategoriesText += `\n┌─⟢ *${catName}* (${activeCmdsInCat.length})\n${formattedCmds}\n└${DIVIDER}\n`;
+        const formattedCmds = activeCmdsInCat.map(cmd => `│ • ${cmd}`).join("\n");
+        menuCategoriesText += `\n╭─${catName}\n${formattedCmds}\n╰───────────────⭓\n`;
     }
 
     try {
-        await sock.sendMessage(chatId, { text: "⚡ Chargement du menu..." }, { quoted: m });
+        await sock.sendMessage(chatId, { text: "🌹 Loading menu bot..." }, { quoted: m });
 
         const menu = `
-✦───────────────────✦
-     ⚡ *${settings.botName}* ⚡
-✦───────────────────✦
-
- 👤  ᴜᴛɪʟɪsᴀᴛᴇᴜʀ  ›  *${pushName}*
- 👑  ᴏᴡɴᴇʀ       ›  *${settings.ownerName}*
- 📦  ᴘʀᴇꜰɪx      ›  *${getPrefix(sock)}*
- ⚙️  ᴍᴏᴅᴇ        ›  *${getMode(sock)}*
- 📜  ᴄᴏᴍᴍᴀɴᴅs    ›  *${totalCommands}*
- ⏱️  ʀᴜɴᴛɪᴍᴇ     ›  *${uptime}*
- 🏷️  ᴠᴇʀsɪᴏɴ     ›  *${settings.version}*
-
-✦───────────────────✦
+╭───────────────⭓
+│ 👤 User : ${pushName}
+│ ⏱ Runtime : ${uptime}
+│ 🕒 Time : ${time}
+│ 💾 RAM : ${usedMemory} / ${totalMemory} GB
+│ ⚙️ Prefix : [ ${getPrefix(sock)} ]
+│ 📦 Commands : ${totalCommands}
+│ 🌐 Mode : ${getMode(sock)}
+╰───────────────⭓
 ${menuCategoriesText}
-✦───────────────────✦
-   ✨ *Powered by ${settings.ownerName}* ✨
-✦───────────────────✦
+🌹 *DEV MICHAEL SCOFIELD* 🌹
     `.trim();
 
         await sock.sendMessage(chatId, {
