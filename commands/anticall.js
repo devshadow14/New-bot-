@@ -1,26 +1,23 @@
-const settings = require("../settings");
-const { readDb, writeDb } = require("../lib/db");
+const { getAnticall, setAnticall } = require("../lib/instanceSettings");
 
 module.exports = async (sock, m, args) => {
     const from = m.key.remoteJid;
-    const sender = m.key.participant || m.key.remoteJid;
-    const ownerNumber = settings.ownerNumber.replace(/[^0-9]/g, "");
-    const isOwner = sender.includes(ownerNumber) || m.key.fromMe;
+    const isOwner = m.key.fromMe;
 
     if (!isOwner) {
-        return await sock.sendMessage(from, { text: "❌ *Access Denied:* Seul le propriétaire peut utiliser cette commande." }, { quoted: m });
+        return await sock.sendMessage(from, { text: "❌ *Access Denied:* Seul le propriétaire de CETTE session peut utiliser cette commande." }, { quoted: m });
     }
 
     const choice = (args[0] || "").toLowerCase();
     if (choice !== "on" && choice !== "off") {
-        return await sock.sendMessage(from, { text: "❌ *Usage:* `.anticall on` ou `.anticall off`" }, { quoted: m });
+        return await sock.sendMessage(from, {
+            text: `❌ *Usage:* \`.anticall on\` ou \`.anticall off\`\n📌 *État actuel:* ${getAnticall(sock) ? "Activé ✅" : "Désactivé ❌"}`
+        }, { quoted: m });
     }
 
-    const db = readDb();
-    db.anticall = (choice === "on");
-    writeDb(db);
+    setAnticall(sock, choice === "on");
 
     await sock.sendMessage(from, {
-        text: `📵 *AntiCall (global):* ${choice === "on" ? "Activé ✅ - tous les appels seront rejetés automatiquement" : "Désactivé ❌"}`
+        text: `╭━━━〔 📵 *ANTICALL* 〕━━━⬣\n┃ ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}\n┃ (cette session uniquement)\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
