@@ -2,11 +2,11 @@ const settings = require("../settings");
 const fs = require("fs");
 const path = require("path");
 const { readDb } = require("../lib/db");
+const { getPrefix, getMode } = require("../lib/instanceSettings");
 
 module.exports = async (sock, m, args) => {
     const pushName = m.pushName || m.senderPn || (m.sender ? m.sender.split('@')[0] : "User");
     const chatId = m.key.remoteJid;
-    const prefix = settings.prefix || ".";
 
     function runtime(seconds) {
         seconds = Number(seconds);
@@ -61,7 +61,7 @@ module.exports = async (sock, m, args) => {
     }
 
     try {
-        await sock.sendMessage(chatId, { text: "⚡ Loading menu scofield-md..." }, { quoted: m });
+        await sock.sendMessage(chatId, { text: "⚡ Loading menu..." }, { quoted: m });
 
         const menu = `
 *╭┈───〔 ${settings.botName} 〕┈───⊷*
@@ -69,8 +69,8 @@ module.exports = async (sock, m, args) => {
 *├▢ 👤 ᴜsᴇʀ:* ${pushName}
 *├▢ 📜 ᴄᴏᴍᴍᴀɴᴅs:* ${totalCommands}
 *├▢ ⏱️ ʀᴜɴᴛɪᴍᴇ:* ${uptime}
-*├▢ 📦 ᴘʀᴇғɪx:* ${prefix}
-*├▢ ⚙️ ᴍᴏᴅᴇ:* ${db.mode || "public"}
+*├▢ 📦 ᴘʀᴇғɪx:* ${getPrefix(sock)}
+*├▢ ⚙️ ᴍᴏᴅᴇ:* ${getMode(sock)}
 *├▢ 🏷️ ᴠᴇʀsɪᴏɴ:* ${settings.version}
 *╰───────────────────⊷*
 ${menuCategoriesText}
