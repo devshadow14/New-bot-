@@ -30,6 +30,6 @@ module.exports = async (sock, m, args) => {
     writeDb(db);
 
     await sock.sendMessage(from, {
-        text: `🚫 *AntiMention (mention bombing, +5 mentions):* ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}`
+        text: `╭━━━〔 🚫 *${"ANTIMENTION"}* 〕━━━⬣\n┃ ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}\n┃ Protection anti mention-bombing\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
