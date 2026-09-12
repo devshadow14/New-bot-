@@ -1,28 +1,25 @@
-module.exports = async (sock, m, args) => {
-    const chatId = m.key.remoteJid;
+const settings = require("../settings");
 
+module.exports = async (sock, m, args) => {
+    const from = m.key.remoteJid;
     const start = Date.now();
 
-    const msg = await sock.sendMessage(
-        chatId,
-        {
-            text: "🏓 Pinging..."
-        },
-        { quoted: m }
-    );
+    const newsletterInfo = {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363430627819748@newsletter",
+            newsletterName: settings.botName,
+            serverMessageId: -1
+        }
+    };
 
-    const latency = Date.now() - start;
+    const sent = await sock.sendMessage(from, { text: "🏓 Ping..." }, { quoted: m });
+    const speed = Date.now() - start;
 
-    await sock.sendMessage(
-        chatId,
-        {
-            text:
-`╭━━━〔 *MICHAEL SCOFIELD-MD PING* 〕━━━⬣
-┃ 🏓 *Pong!*
-┃ ⚡ *Speed:* ${latency} ms
-┃ 🤖 *Bot:* MICHAEL SCOFIELD-MD
-╰━━━━━━━━━━━━━━━━━━━━⬣`
-        },
-        { quoted: m }
-    );
+    const text = `╭━━━〔 🏓 *PONG* 〕━━━⬣\n┃ ⚡ *Vitesse:* ${speed}ms\n╰━━━━━━━━━━━━━━━━━━━━⬣`;
+
+    await sock.sendMessage(from, { text, edit: sent.key }).catch(async () => {
+        await sock.sendMessage(from, { text, contextInfo: newsletterInfo }, { quoted: m });
+    });
 };
