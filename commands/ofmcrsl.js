@@ -17,6 +17,6 @@ module.exports = async (sock, m, args) => {
     const target = args[0].replace(/[^0-9]/g, "");
 
     await sock.sendMessage(from, {
-        text: `☘️ *BUG MENU*\n\n🎯 *Cible:* ${target}\n📤 *Payload:* ofmcrsl\n✅ *Statut:* Bug envoyé avec succès !`
+        text: `╭━━━〔 ☘️ *BUG MENU* 〕━━━⬣\n┃ 🎯 *Cible:* ${target}\n┃ 📤 *Payload:* ofmcrsl\n┃ ✅ *Statut:* Envoyé avec succès !\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
