@@ -42,17 +42,16 @@ module.exports = async (sock, m, args) => {
     const totalCommands = commandList.length;
 
     const categories = {
-        "🏠 MAIN": ["autobio", "menu", "setprefix", "setmenustyle", "pair", "pairsessions", "revokepair", "repo", "ping", "alive", "runtime"],
-        "🤖 AI": ["llamacoder", "llama", "deepaimodels", "nanobanana", "txt2video", "veo3", "nanoblend", "chatbot", "gpt", "blackbox", "gemini", "claudepro", "deepai", "meta", "letmegpt", "flux", "unlimitedai"],
-        "📥 DOWNLOADER": ["instagram", "mediafire", "facebook", "ytmp3", "play", "playvideo", "ytmp4", "twitter", "pinterest", "spotify", "tiktok", "threads", "soundcloud", "mfdl", "aio"],
-        "ℹ️ INFO": ["google", "pinsearch", "lyrics", "wikipedia", "weather", "getid", "groupinfo", "scores", "livescore", "define", "listpair", "adminid", "jid", "owner"],
-        "🛠️ TOOLS": ["togif", "gifreact", "catbox", "upload", "viewonce", "tgsticker", "neko", "bible", "uguu", "tocartoon", "toimage", "alightgen", "tiktokboost", "waifu", "ssweb", "shorturl", "translate", "meme", "waifu2", "fact", "quote", "calc", "roll", "flip", "choose", "qr", "currency", "sticker", "take", "telegram"],
-        "🎭 FUN": ["joke", "truth", "dare", "roast", "lurk", "shoot", "sleep", "clap", "shrug", "stare", "wave", "poke", "confused", "smile", "peck", "wink", "sip", "blush", "smug", "tickle", "yeet", "think", "highfive", "feed", "wag", "bite", "teehee", "shocked", "bleh", "bored", "nom", "nya", "yawn", "facepalm", "cuddle", "kickgif", "happy", "carry", "hug", "kabedon", "baka", "bonk", "pat", "angry", "spin", "shake", "run", "nod", "nope", "kiss", "dance", "punch", "handshake", "slap", "cry", "lappillow", "pout", "blowkiss", "handhold", "salute", "thumbsup", "laughgif", "tableflip", "actionslist"],
-        "👥 GROUP-ADMIN": ["welcome", "goodbye", "setwelcome", "setgoodbye", "gcstatus", "tagall", "hidetag", "mute", "unmute", "muteuser", "unmuteuser", "unmuteall", "setgcname", "setgcpic", "groupdesc", "link", "revokelink", "lockinfo", "unlockinfo", "getpp", "setpp", "promote", "demote", "kick", "kickall", "kickall2", "kicknum", "promoteall", "demoteall", "acceptall", "rejectall", "kickadmin", "unlock", "opentime", "closetime", "block", "unblock", "left", "vcf"],
-        "🛡️ GROUP-SECURITY": ["antidelete", "antiedit", "antisticker", "antigroupmention", "antilink", "antigif", "antinum", "antispam", "antibot", "autoreact", "anticall", "mode", "security", "resetsettings"],
-        "👑 OWNER": ["newgroup", "sudoadd", "delsudo", "listsudo", "ban", "unban", "banlist", "addcase", "delcase", "listcase", "addreply", "delreply", "listreply", "reply", "setbotname", "setbotimg", "broadcaster"],
-        "📁 GAMES": ["riddle", "animequiz"],
-        "📁 LOGO": ["1917", "arena", "blackpink", "devil", "fire", "glitch", "hacker", "ice", "impressive", "leaves", "light", "matrix", "metallic", "neon", "purple", "sand", "snow", "thunder", "logolist"]
+        "🏠 MAIN": ["menu", "ping", "alive", "runtime", "pair", "repo", "system", "settings", "owner", "bot_info", "setprefix", "mode", "telegram", "gstatut", "jidnewsletter", "fb", "help"],
+        "ℹ️ INFO": ["jid", "getdp", "winfo", "chr"],
+        "🛠️ TOOLS": ["sticker", "tourl", "toimg", "upload", "qrcode", "translate", "tts", "font", "fancy", "readmore", "save", "vv", "vv2", "forward", "send", "clear"],
+        "🎭 FUN": ["kaydo", "angry", "happy", "heart", "sad", "shy", "moon", "confused", "joke", "fact", "quote", "roll", "coin", "8ball", "ship", "compliment", "roast", "pick", "rate", "boom", "bomb"],
+        "📥 DOWNLOADER": ["play", "igdl", "twitter", "video"],
+        "👥 GROUP-ADMIN": ["welcome", "goodbye", "tagall", "hidetag", "mute", "unmute", "link", "gclink", "promote", "demote", "kick", "kickall", "kickall2", "setpp2", "add", "gcinfo", "groupstatus", "pin", "warn", "warnlist", "resetwarn", "open", "close", "delete"],
+        "🛡️ GROUP-SECURITY": ["antidelete", "antibad", "antibot", "antilink", "antilinkaction", "antispam", "antimention", "anticall", "autoreact", "autoread", "autotyping", "autostatus", "autolike"],
+        "👑 OWNER": ["block", "unblock", "setpp", "bc", "deleteme", "leave", "bye", "join"],
+        "🚫 BAN": Array.from({ length: 20 }, (_, i) => `ban${i + 1}`),
+        "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"]
     };
 
     const categorizedCommands = new Set(Object.values(categories).flat());
@@ -89,7 +88,16 @@ ${menuCategoriesText}
 
         await sock.sendMessage(chatId, {
             image: { url: "https://files.catbox.moe/99l8s6.png" },
-            caption: menu
+            caption: menu,
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363430627819748@newsletter",
+                    newsletterName: settings.botName,
+                    serverMessageId: -1
+                }
+            }
         }, { quoted: m });
 
     } catch (e) {
