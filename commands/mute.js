@@ -1,3 +1,5 @@
+const settings = require("../settings");
+
 module.exports = async (sock, m, args) => {
     const from = m.key.remoteJid;
 
@@ -7,7 +9,18 @@ module.exports = async (sock, m, args) => {
 
     try {
         await sock.groupSettingUpdate(from, "announcement");
-        await sock.sendMessage(from, { text: "🔇 *Groupe mute:* Seuls les admins peuvent écrire." }, { quoted: m });
+        await sock.sendMessage(from, {
+            text: "╭━━━〔 🔇 *GROUPE MUTE* 〕━━━⬣\n┃ Seuls les admins peuvent écrire.\n╰━━━━━━━━━━━━━━━━━━━━⬣",
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: "120363430627819748@newsletter",
+                    newsletterName: settings.botName,
+                    serverMessageId: -1
+                }
+            }
+        }, { quoted: m });
     } catch (error) {
         await sock.sendMessage(from, { text: "❌ Échec. Vérifie que le bot est admin." }, { quoted: m });
     }
