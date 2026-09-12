@@ -1,6 +1,6 @@
 module.exports = {
   // 🤖 BASIC INFO
-  botName: "𝐌𝐈𝐂𝐇𝐀𝐄𝐋 𝐒𝐂𝐎𝐅𝐈𝐄𝐋𝐃-𝐌𝐃 👑",
+  botName: "𝐌𝐈𝐂𝐇𝐀𝐄𝐋 𝐒𝐂𝐎𝐅𝐈𝐄𝐋𝐃-𝐌𝐃 🌹",
   ownerName: "Dev Michael Scofield",
   ownerNumber: "221758535949",
   sudoNumbers: ["221776227173"],
