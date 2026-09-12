@@ -1,4 +1,5 @@
 const settings = require("../settings");
+const { checkCooldown } = require("../lib/cooldown");
 
 module.exports = async (sock, m, args) => {
     const from = m.key.remoteJid;
@@ -16,6 +17,13 @@ module.exports = async (sock, m, args) => {
         return await sock.sendMessage(from, { text: "❌ *Access Denied:* Seul le propriétaire du bot peut utiliser cette commande." }, { quoted: m });
     }
 
+    const cooldown = checkCooldown("kickall2", from, 2 * 60 * 1000);
+    if (!cooldown.allowed) {
+        return await sock.sendMessage(from, {
+            text: `⏳ *Anti-flood:* Attends encore ${cooldown.remainingSeconds}s avant de refaire un \`.kickall2\` (protection contre un ban WhatsApp).`
+        }, { quoted: m });
+    }
+
     try {
         const metadata = await sock.groupMetadata(from);
         const botId = sock.user.id.split(":")[0] + "@s.whatsapp.net";
@@ -30,7 +38,9 @@ module.exports = async (sock, m, args) => {
 
         await sock.sendMessage(from, { text: `⚠️ *KickAll2:* Expulsion de ${membersToKick.length} membres (y compris les admins)...` }, { quoted: m });
         await sock.groupParticipantsUpdate(from, membersToKick, "remove");
-        await sock.sendMessage(from, { text: `✅ Tous les membres ont été expulsés !` }, { quoted: m });
+        await sock.sendMessage(from, {
+            text: `╭━━━〔 ✅ *KICKALL2* 〕━━━⬣\n┃ Tous les membres ont été expulsés !\n╰━━━━━━━━━━━━━━━━━━━━⬣`
+        }, { quoted: m });
 
     } catch (error) {
         await sock.sendMessage(from, { text: "❌ Échec. Vérifie que le bot est bien admin." }, { quoted: m });
