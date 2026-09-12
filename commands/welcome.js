@@ -19,18 +19,14 @@ module.exports = async (sock, m, args) => {
     const isGroup = chatId.endsWith('@g.us');
 
     if (!isGroup) {
-        return await sock.sendMessage(chatId, {
-            text: `❌ This command is only for groups!`
-        }, { quoted: m });
+        return await sock.sendMessage(chatId, { text: `❌ This command is only for groups!` }, { quoted: m });
     }
 
     const option = args[0]?.toLowerCase();
 
     if (!option || (option !== 'on' && option !== 'off')) {
         return await sock.sendMessage(chatId, {
-            text:
-                `❌ *Usage:* \`.welcome on\` or \`.welcome off\`\n\n` +
-                `💡 *Example:* \`.welcome on\``
+            text: `❌ *Usage:* \`.welcome on\` or \`.welcome off\``
         }, { quoted: m });
     }
 
@@ -42,8 +38,6 @@ module.exports = async (sock, m, args) => {
     saveDb(db);
 
     await sock.sendMessage(chatId, {
-        text: option === 'on'
-            ? `✅ *Welcome enabled!* New members will receive a welcome message.`
-            : `❌ *Welcome disabled!* No more welcome messages.`
+        text: `╭━━━〔 👋 *WELCOME* 〕━━━⬣\n┃ ${option === 'on' ? "Activé ✅" : "Désactivé ❌"}\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
