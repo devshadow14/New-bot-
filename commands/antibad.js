@@ -30,6 +30,6 @@ module.exports = async (sock, m, args) => {
     writeDb(db);
 
     await sock.sendMessage(from, {
-        text: `🚫 *AntiBad (mots interdits):* ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}`
+        text: `╭━━━〔 🚫 *${"ANTIBAD"}* 〕━━━⬣\n┃ ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}\n┃ Filtre les mots interdits\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
