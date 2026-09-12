@@ -13,13 +13,17 @@ module.exports = async (sock, m, args) => {
     if (args[0] !== "confirm") {
         return await sock.sendMessage(from, {
             text:
-                `⚠️ *ATTENTION:* Cette commande déconnecte complètement le bot de WhatsApp (comme un déliage manuel).\n\n` +
-                `Pour confirmer, tape :\n\`.deleteme confirm\``
+                `╭━━━〔 ⚠️ *DELETEME* 〕━━━⬣\n` +
+                `┃ Ceci déconnecte complètement\n┃ le bot de WhatsApp.\n┃\n` +
+                `┃ Pour confirmer, tape:\n┃ \`.deleteme confirm\`\n` +
+                `╰━━━━━━━━━━━━━━━━━━━━⬣`
         }, { quoted: m });
     }
 
     try {
-        await sock.sendMessage(from, { text: "👋 Déconnexion du bot en cours... À bientôt !" });
+        await sock.sendMessage(from, {
+            text: "╭━━━〔 👋 *DELETEME* 〕━━━⬣\n┃ Déconnexion en cours...\n╰━━━━━━━━━━━━━━━━━━━━⬣"
+        });
         await sock.logout();
     } catch (error) {
         await sock.sendMessage(from, { text: `❌ Erreur: ${error.message}` }, { quoted: m });
