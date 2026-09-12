@@ -1,6 +1,6 @@
 function getMoonPhase() {
     const knownNewMoon = new Date("2000-01-06T18:14:00Z").getTime();
-    const lunarCycle = 29.53058867; // jours
+    const lunarCycle = 29.53058867;
     const now = Date.now();
     const daysSince = (now - knownNewMoon) / (1000 * 60 * 60 * 24);
     const phase = (daysSince % lunarCycle) / lunarCycle;
@@ -26,10 +26,11 @@ module.exports = async (sock, m, args) => {
     const { name, percent } = getMoonPhase();
 
     const text =
-        `🌙 *PHASE DE LUNE ACTUELLE*\n\n` +
-        `${name}\n` +
-        `📊 *Cycle:* ${percent}%\n` +
-        `📅 *Date:* ${new Date().toLocaleDateString("fr-FR")}`;
+        `╭━━━〔 🌙 *PHASE DE LUNE* 〕━━━⬣\n` +
+        `┃ ${name}\n` +
+        `┃ 📊 Cycle: ${percent}%\n` +
+        `┃ 📅 ${new Date().toLocaleDateString("fr-FR")}\n` +
+        `╰━━━━━━━━━━━━━━━━━━━━⬣`;
 
     await sock.sendMessage(from, { text }, { quoted: m });
 };
