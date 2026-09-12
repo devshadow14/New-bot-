@@ -1,4 +1,5 @@
 const settings = require("../settings");
+const { checkCooldown } = require("../lib/cooldown");
 
 module.exports = async (sock, m, args) => {
     const from = m.key.remoteJid;
@@ -8,6 +9,13 @@ module.exports = async (sock, m, args) => {
 
     if (!isOwner) {
         return await sock.sendMessage(from, { text: "❌ *Access Denied:* Réservé au propriétaire." }, { quoted: m });
+    }
+
+    const cooldown = checkCooldown("bc", sock.user.id, 5 * 60 * 1000);
+    if (!cooldown.allowed) {
+        return await sock.sendMessage(from, {
+            text: `⏳ *Anti-flood:* Attends encore ${cooldown.remainingSeconds}s avant de refaire un \`.bc\` (protection contre un ban WhatsApp).`
+        }, { quoted: m });
     }
 
     const message = args.join(" ");
@@ -34,7 +42,9 @@ module.exports = async (sock, m, args) => {
             }
         }
 
-        await sock.sendMessage(from, { text: `✅ Message envoyé à ${sent}/${groupIds.length} groupes.` });
+        await sock.sendMessage(from, {
+            text: `╭━━━〔 ✅ *BC* 〕━━━⬣\n┃ Envoyé à ${sent}/${groupIds.length} groupes.\n╰━━━━━━━━━━━━━━━━━━━━⬣`
+        });
 
     } catch (error) {
         await sock.sendMessage(from, { text: `❌ Erreur: ${error.message}` }, { quoted: m });
