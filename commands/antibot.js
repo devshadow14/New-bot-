@@ -30,6 +30,6 @@ module.exports = async (sock, m, args) => {
     writeDb(db);
 
     await sock.sendMessage(from, {
-        text: `🤖 *AntiBot:* ${choice === "on" ? "Activé ✅ (heuristique basée sur le nom, pas garanti à 100%)" : "Désactivé ❌"}`
+        text: `╭━━━〔 🤖 *${"ANTIBOT"}* 〕━━━⬣\n┃ ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}\n┃ Détecte/expulse les bots (heuristique)\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
