@@ -30,6 +30,6 @@ module.exports = async (sock, m, args) => {
     writeDb(db);
 
     await sock.sendMessage(from, {
-        text: `🗑️ *AntiDelete:* ${choice === "on" ? "Activé ✅ (les messages supprimés seront réaffichés)" : "Désactivé ❌"}`
+        text: `╭━━━〔 🗑️ *${"ANTIDELETE"}* 〕━━━⬣\n┃ ${choice === "on" ? "Activé ✅" : "Désactivé ❌"}\n┃ Réaffiche les messages supprimés\n╰━━━━━━━━━━━━━━━━━━━━⬣`
     }, { quoted: m });
 };
