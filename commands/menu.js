@@ -43,7 +43,7 @@ module.exports = async (sock, m, args) => {
 
     const categories = {
         "🏠 MAIN": ["menu", "ping", "alive", "runtime", "pair", "repo", "system", "settings", "owner", "bot_info", "setprefix", "mode", "telegram", "gstatut", "jidnewsletter", "fb", "help"],
-        "ℹ️ INFO": ["jid", "getdp", "winfo", "chr"],
+        "ℹ️ INFO": ["google", "pinsearch", "lyrics", "wikipedia", "weather", "getid", "groupinfo", "scores", "livescore", "define", "listpair", "adminid", "jid", "getdp", "winfo", "chr"],
         "🛠️ TOOLS": ["sticker", "tourl", "toimg", "upload", "qrcode", "translate", "tts", "font", "fancy", "readmore", "save", "vv", "vv2", "forward", "send", "clear"],
         "🎭 FUN": ["kaydo", "angry", "happy", "heart", "sad", "shy", "moon", "confused", "joke", "fact", "quote", "roll", "coin", "8ball", "ship", "compliment", "roast", "pick", "rate", "boom", "bomb"],
         "📥 DOWNLOADER": ["play", "igdl", "twitter", "video"],
@@ -51,7 +51,12 @@ module.exports = async (sock, m, args) => {
         "🛡️ GROUP-SECURITY": ["antidelete", "antibad", "antibot", "antilink", "antilinkaction", "antispam", "antimention", "anticall", "autoreact", "autoread", "autotyping", "autostatus", "autolike"],
         "👑 OWNER": ["block", "unblock", "setpp", "bc", "deleteme", "leave", "bye", "join"],
         "🚫 BAN": Array.from({ length: 20 }, (_, i) => `ban${i + 1}`),
-        "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"]
+        "☘️ BUG MENU": ["forceclose", "invis-oom", "invis-oom2", "sql-memory", "ofmcrsl", "pl"],
+        "🎭 REACTION GIF": ["hug", "kiss", "cuddle", "pat", "laugh", "tickle", "poke", "wink", "slap", "punch", "bonk", "smile", "blush", "smug", "shrug", "stare", "clap", "nod", "dance", "spin", "shake", "run", "nya", "wag", "bite", "baka", "sleep", "sip", "yawn", "bored"],
+        "📁 GAMES": ["riddle", "animequiz"],
+        "📁 LOGO": ["1917", "arena", "blackpink", "devil", "fire", "glitch", "hacker", "ice", "impressive", "leaves", "light", "matrix", "metallic", "neon", "purple", "sand", "snow", "thunder", "logolist"],
+        "🎌 ANIME": ["anime", "animewallpaper", "animegirl", "animeimg", "animerand", "waifu", "neko", "megumin", "maid", "awoo", "waifu2"],
+        "🤖 A.I": ["gpt", "gemini"]
     };
 
     const categorizedCommands = new Set(Object.values(categories).flat());
