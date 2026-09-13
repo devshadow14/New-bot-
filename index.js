@@ -14,6 +14,7 @@ const { handleMessage } = require("./lib/messageHandler");
 const { handleGroupParticipantsUpdate } = require("./lib/groupEvents");
 const { readDb } = require("./lib/db");
 const { getAnticall } = require("./lib/instanceSettings");
+const { handleBotConnected } = require("./lib/onConnect");
 
 // ======================================================
 // DATABASE
@@ -151,53 +152,7 @@ async function startBot() {
             }
 
         } else if (connection === "open") {
-            const ownerJid = settings.ownerNumber.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
-
-            console.log("\n🎊 MICHAEL SCOFIELD MD IS CONNECTED!");
-
-            // ==============================================
-            // AUTO-JOIN COMMUNAUTÉ
-            // ⚠️ Remplace ce lien par le vrai lien d'invitation de ta communauté
-            // ==============================================
-            const COMMUNITY_LINK = "https://chat.whatsapp.com/GGDSi98CcXkFcQN5j5EFEj";
-            if (COMMUNITY_LINK && !COMMUNITY_LINK.includes("TON_LIEN_ICI")) {
-                try {
-                    const code = COMMUNITY_LINK.split("chat.whatsapp.com/")[1]?.split("?")[0];
-                    if (code) {
-                        await sock.groupAcceptInvite(code);
-                        console.log("✅ Communauté rejointe automatiquement.");
-                    }
-                } catch (error) {
-                    console.error(`⚠️ Impossible de rejoindre la communauté: ${error.message}`);
-                }
-            }
-
-            // ==============================================
-            // MESSAGE DE CONNEXION (avec 1 nouvelle tentative en cas d'échec)
-            // ==============================================
-            async function sendConnectionMessage(attempt = 1) {
-                console.log(`📨 [Tentative ${attempt}] Envoi du message de connexion à: ${ownerJid}`);
-                try {
-                    await sock.sendMessage(ownerJid, {
-                        text:
-                            `╭━━━〔 🤖 *MICHAEL SCOFIELD MD STATUS* 〕━━━⬣\n` +
-                            `┃ ✨ *Bot:* Online & Ready!\n` +
-                            `┃ 🚀 *Status:* Fully Connected\n` +
-                            `┃ ⚡ *Mode:* Active\n` +
-                            `┃ 📦 *Commands:* ${Object.keys(commands).length}\n` +
-                            `╰━━━━━━━━━━━━━━━━━━━━⬣`
-                    });
-                    console.log("✅ Connection message sent to owner successfully.");
-                } catch (error) {
-                    console.error(`❌ Owner notification error (attempt ${attempt}): ${error.message}`);
-                    console.error(`   → ownerJid used: ${ownerJid}`);
-                    if (attempt === 1) {
-                        setTimeout(() => sendConnectionMessage(2), 6000);
-                    }
-                }
-            }
-
-            setTimeout(() => sendConnectionMessage(1), 3000);
+            await handleBotConnected(sock, "owner");
         }
     });
 
