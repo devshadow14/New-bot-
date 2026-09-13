@@ -14,6 +14,7 @@ const { handleMessage } = require("./lib/messageHandler");
 const { handleGroupParticipantsUpdate } = require("./lib/groupEvents");
 const { readDb } = require("./lib/db");
 const { getAnticall } = require("./lib/instanceSettings");
+const { handleBotConnected } = require("./lib/onConnect");
 
 const PORT = process.env.PORT || 20025;
 const app = express();
@@ -50,6 +51,7 @@ async function createWebSession(number) {
         if (connection === "open") {
             if (entry) entry.status = "connected";
             console.log(`✅ Web session connected: ${number}`);
+            handleBotConnected(sock, `web:${number}`).catch(e => console.error(`onConnect error: ${e.message}`));
 
         } else if (connection === "close") {
             const statusCode = lastDisconnect?.error?.output?.statusCode;
@@ -228,4 +230,10 @@ app.listen(PORT, () => {
     reconnectExistingSessions();
 });
 
-module.exports = { requestPairingForNumber };
+function listActiveSessions() {
+    return [...activeConnections.entries()]
+        .filter(([, entry]) => entry.status === "connected")
+        .map(([number]) => number);
+}
+
+module.exports = { requestPairingForNumber, listActiveSessions };
